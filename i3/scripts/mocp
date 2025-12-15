@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Check if MOC server is running
+if ! pgrep -x mocp >/dev/null; then
+    echo "MOC not running"
+    exit 0
+fi
+
+# Get state
+STATE=$(mocp -i | grep '^State:' | awk '{print $2}')
+
+if [ "$STATE" = "STOP" ]; then
+    echo "Stopped"
+    exit 0
+fi
+
+# Get song info
+ARTIST=$(mocp -i | grep '^Artist:' | cut -d ' ' -f2-)
+TITLE=$(mocp -i | grep '^SongTitle:' | cut -d ' ' -f2-)
+ALBUM=$(mocp -i | grep '^Album:' | cut -d ' ' -f2-)
+
+# Fallback to filename if no title tag
+if [ -z "$TITLE" ]; then
+    FILE=$(mocp -i | grep '^File:' | awk -F'/' '{print $NF}')
+    TITLE=${FILE%.*}  # remove extension
+fi
+
+# Build the text
+TEXT="$ARTIST - $TITLE"
+[ -n "$ALBUM" ] && TEXT="$TEXT ($ALBUM)"
+
+# Add play/pause icon (optional, using Unicode)
+if [ "$STATE" = "PLAY" ]; then
+    ICON="♫"
+    COLOR="#8cc85f"  # bright green
+elif [ "$STATE" = "PAUSE" ]; then
+    ICON="♫"
+    COLOR="#ff5d5d"  # bright red
+fi
+
+# Full output with Pango markup
+FULL="<span foreground='$COLOR'>$ICON $TEXT</span>"
+
+# Optional: truncate long text (adjust 60 to your preference)
+if [ ${#TEXT} -gt 60 ]; then
+    TRUNCATED="${TEXT:0:57}..."
+    FULL="<span foreground='$COLOR'>$ICON $TRUNCATED</span>"
+fi
+
+echo "$FULL"
+echo "$FULL"  # short text (same as full for i3blocks)
