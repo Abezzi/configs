@@ -1,0 +1,12 @@
+#!/bin/bash
+
+quotes=(
+  "The magic you are looking is in the work you are avoiding"
+  "Something to do, someone to love, something to hope for."
+)
+
+SYMBOL="( ͡° ͜ʖ ͡°)"
+INDEX=$((0 + $RANDOM % ${#quotes[@]}))
+QUOTE=${quotes[$INDEX]}
+
+echo "$SYMBOL $QUOTE"
