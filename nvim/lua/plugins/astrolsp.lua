@@ -40,6 +40,20 @@ return {
     -- enable servers that you already have installed without mason
     servers = {
       -- "pyright"
+      ts_ls = {
+        filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact" },
+        init_options = {
+          plugins = {
+            {
+              name = "@vue/typescript-plugin",
+              location = vim.fn.stdpath "data"
+                .. "/mason/packages/vue-language-server/node_modules/@vue/language-server",
+              languages = { "vue" },
+            },
+          },
+        },
+      },
+      volar = {},
     },
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
